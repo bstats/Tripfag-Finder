@@ -6,8 +6,8 @@
 // @contributor   milky
 // @run-at        document-idle
 // @include       http*://boards.4chan.org/b/*
-// @updateURL     https://b-stats.org/finder/TripfagFinder.user.js
-// @version       1.5
+// @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
+// @version       1.51
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -45,6 +45,9 @@
 // - Added post/image counts
 // 1.5 (terrance)
 // - Fixed that darn update link not matching the other links.
+// 1.51 (terrance)
+// - Update because chrome can't into decimals and thinks v1.5 is less than v1.45
+// - Switchin to github
 
 // Inspired by ThreadLocator
 // https://github.com/Finer/Threadlocator
@@ -56,7 +59,7 @@
 $q = jQuery.noConflict();
 
 var namespace = "TripfagFinder."
-var version = "1.5";
+var version = "1.51";
 var thread = document.URL.replace(/^.*\/|\.[^.]*$/g, '').substring(0, 9);
 var delform = $q("#delform");
 var threadwrapper;
@@ -78,7 +81,7 @@ var Prefs = {};
 var preview = function(){
     offsetX = 25;
     offsetY = 75;
-    $q("a.tfThreadLink").hover(function(e){  										  
+    $q("a.tfThreadLink").hover(function(e){											  
         this.t = this.title;	
         this.title="";
         $q("body").append("<img id='tfHover' src='"+protocol+"//thumbs.4chan.org/b/thumb/"+ this.t +"s.jpg'/>");
@@ -240,7 +243,7 @@ function checkForUpdate(){
                 if(is_chrome && !Prefs["ChromeFix"])
                     window.location=protocol+"//b-stats.org/finder/chrome.php";
                 else
-                    window.location=protocol+"//b-stats.org/finder/Tripfag-Finder.user.js";
+                    window.location="https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js";
     });
 }
 
