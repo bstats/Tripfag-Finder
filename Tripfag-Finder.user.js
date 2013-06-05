@@ -53,6 +53,7 @@
 //      -Fixed where incorrect image would show
 //      -Fixed where image would show at the bottom of the page
 // - Added online user count
+// - Added automatic refresh (2 minutes)
 
 // Inspired by ThreadLocator
 // https://github.com/Finer/Threadlocator
