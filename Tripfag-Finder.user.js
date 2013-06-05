@@ -7,7 +7,7 @@
 // @run-at        document-idle
 // @include       http*://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       1.52
+// @version       1.53
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -54,6 +54,8 @@
 //      -Fixed where image would show at the bottom of the page
 // - Added online user count
 // - Added automatic refresh (2 minutes)
+// 1.53 (terrance)
+// - Fixed error where version number wasn't sent with every request
 
 // Inspired by ThreadLocator
 // https://github.com/Finer/Threadlocator
@@ -65,7 +67,7 @@
 $q = jQuery.noConflict();
 
 var namespace = "TripfagFinder."
-var version = "1.52";
+var version = "1.53";
 var thread = document.URL.replace(/^.*\/|\.[^.]*$/g, '').substring(0, 9);
 var delform = $q("#delform");
 var threadwrapper;
@@ -268,7 +270,7 @@ function apiReq(action, data, ultimate){
         headers: {"X-Requested-With" : "Ajax"},
         url: protocol+'//b-stats.org/finder/api.php',
         type: "POST",
-        data: "a="+action + sendData
+        data: "a="+action + sendData + "&v=" + version
     }).fail(function(){
         console.log("Tripfag-Finder: Error sending API request!");
     }).always(function(data){
