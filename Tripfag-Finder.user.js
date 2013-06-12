@@ -189,10 +189,14 @@ function init(){
         container = $q("<div id='threadFinderContainer' />").prependTo("#delform");
     else
         container = $q("<div id='threadFinderContainer' />").appendTo("#delform");
-  $q('<span id="tfOpen" style="float: left; height: 100%; display: inline; position: absolute; margin-left: 0px; left: 0px; width: 22px; cursor: pointer;">&nbsp;</span>').appendTo("#threadFinderContainer");
+    if(Prefs["Peekaboo"]){
+        $q('<span id="tfOpen" style="float: left; height: 100%; display: inline; position: absolute; margin-left: 0px; left: 0px; width: 22px; cursor: pointer;">&nbsp;</span>').appendTo("#threadFinderContainer");
+        $q("#tfOpen").click(show);
+        $q("#tfOpen").click(hide);
+    }
     threadwrapper = $q("<div />").appendTo(container);
-   container.addClass("reply");
-   getbutton = $q("<input />").attr("type", "button").val("Refresh").on("click", get).appendTo(container);
+    container.addClass("reply");
+    getbutton = $q("<input />").attr("type", "button").val("Refresh").on("click", get).appendTo(container);
     
     if (thread.length == 9) {
             type = $q("<select></select>").attr("id","type").appendTo(container);
@@ -208,8 +212,6 @@ function init(){
          });
     }
     
-    $q("#tfOpen").click(show);
-    $q("#tfOpen").click(hide);
     checkForUpdate();
     
     Options.makeLink();
