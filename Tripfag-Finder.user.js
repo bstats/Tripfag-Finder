@@ -155,8 +155,8 @@ var Options = {
 		"Center": ["Center thread box",true],
                 "Hover": ["Show OP image preview on hover",true],
                 "Counts": ["Show reply/image count in thread list",true],
-                "Peekaboo": ["Slide thread box in from the right",false],
-                "StartOpen": ["Start with the thread box visible",false]
+                "Peekaboo": ["Slide thread box in from the right",true],
+                "StartOpen": ["Start with the thread box visible",true]
 	},
 	get: function(name) {
 		return localStorage.getItem(namespace + name);
