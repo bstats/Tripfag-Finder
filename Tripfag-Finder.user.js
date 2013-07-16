@@ -155,7 +155,7 @@ var Options = {
 		"draw": ["Show Draw threads", true],
                 "loli": ["Show Loli threads", true],
                 "shota": ["Show Shota threads", true],
-                "ks": ["Show Katawa Shoujou threads", true],
+                "ks": ["Show Katawa Shoujo threads", true],
 		"Update Check": ["Check for updates", true],
 		"ChromeFix": ["<span style='font-size:0.95em'>Disable Chrome auto-update workaround</span><span style='font-size:0.75em'> (which forces script download)</span>", false],
 		"Top": ["Display thread box above thread", true],
