@@ -89,7 +89,7 @@ var type;
 var setbutton;
 var unsetbutton;
 var hidden = true;
-var protocol = "http"; //this is a temporary fix until I get b-stats back online
+var protocol = "http:"; //this is a temporary fix until I get b-stats back online
 var container;
 var threadTypes = {"animu":"Animu Thread",
                    "draw":"Draw Thread",
