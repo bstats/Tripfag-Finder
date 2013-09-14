@@ -1,4 +1,4 @@
 Tripfag-Finder
 ==============
 
-Userscript for finding threads.
+Userscript for finding certain threads.
