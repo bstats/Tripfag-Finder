@@ -1,0 +1,81 @@
+1.0 (milky)
+- Initial
+1.1 (milky)
+- Moved options to bottom of page
+- Fixed percentages
+- Marks shown by percentage
+1.2 (milky)
+- Removed decimal points in percentages
+1.30 (terrance)
+- Genericized script for all threads
+- Changed to use b-stats style API
+1.31 (terrance)
+- Added unmark option
+1.4 (terrance)
+- Added update checker
+- Added options page
+- Added position customization
+- Added thread type enable/disable
+1.42 (terrance)
+- Fixed CSS conflicts with oneechan and other nonstandard styles
+- Fixed thread list preventing interaction with post delete, style selector, etc.
+1.43 (terrance)
+- Cleaned up API requests by wrapping them in a function
+- Threadlist no longer flashes/disappears on refresh
+1.44 (terrance)
+- Fixed small bug that occurs when no threads are found
+- Fixed bug where auto-updater wouldn't function
+- Added auto-update workaround for Chrome users
+1.45 (terrance)
+- Added HTTPS/SSL detection and support
+- Added OP image hovering
+- Added post/image counts
+1.5 (terrance)
+- Fixed that darn update link not matching the other links.
+1.51 (terrance)
+- Update because chrome can't into decimals and thinks v1.5 is less than v1.45
+- Switchin to github
+1.52 (terrance)
+- Fixed issues with image hovering:
+     -Fixed where incorrect image would show
+     -Fixed where image would show at the bottom of the page
+- Added online user count
+- Added automatic refresh (2 minutes)
+1.53 (terrance)
+- Fixed error where version number wasn't sent with every request
+1.54 (terrance)
+- Added "slide-in" placement option
+- Fixed OP image hovering
+1.55 (terrance)
+- Now refreshes upon sliding out
+- Added option to start with the finder open
+1.56 (terrance)
+- Security fixes
+- Implemented password protection, if required
+- Should have fixed the finder not showing up on https:
+1.57 (terrance)
+- Only allow one refresh to happen at a time
+- Added shota, loli, and KS threads
+1.58, 1.59 (terrance)
+- Switched server until b-stats is fixed
+1.60 (terrance)
+- Fix issue #1
+1.61 (terrance)
+- Re-added https: support
+- Back on b-stats.org
+1.62 (terrance)
+- Fix for Chrom(e/ium) permissions
+1.63 (terrance)
+- Changed the way online user count is retrieved
+- Made thumbs look prettier.
+2.0 (terrance)
+- Removed jQuery
+- Changed API format
+- Added 4chanX Notification integration
+- Added new options panel with 4chanX-like styling and clearer settings
+- Consolidated functionality of admin and standard scripts
+- 4x smaller script size
+- Added flexbox; flexbox support is now required
+- Added floating position option
+- Added windowshade option for floating window
+- All options are now applied immediately when the options page is closed, and finder window is re-initialized.
