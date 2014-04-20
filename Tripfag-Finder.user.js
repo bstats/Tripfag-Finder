@@ -95,7 +95,7 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.0",
+    VERSION : "2.0.1",
     HOST : "b-stats.org",
     API : "/finder/api.php",
     chanX : false,
