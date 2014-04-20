@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.0
+// @version       2.0.1
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -276,7 +276,7 @@ Finder = {
                         className:"tf_thread",
                         "data-thread":t.thread,"data-votes":t.votes,"data-type":t.type,
                         "data-tim":t.tim,"data-replies":t.r,"data-images":t.i,
-                        innerHTML:"<a class='tf_threadLink' href='/b/res/"+t.thread+"'>"+Options.threadTypes[t.type]+" Thread: "+t.thread+" ("+t.percent+"%) ("+t.votes+")</a>"});
+                        innerHTML:"<a class='tf_threadLink' href='/b/thread/"+t.thread+"'>"+Options.threadTypes[t.type]+" Thread: "+t.thread+" ("+t.percent+"%) ("+t.votes+")</a>"});
                     if(t.thread == c.thread){
                         Finder.typeSelect.value = t.type;
                     }
