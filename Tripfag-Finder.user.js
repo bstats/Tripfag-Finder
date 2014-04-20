@@ -204,7 +204,7 @@ Finder = {
         $.on(Finder.refreshButton,"click", Finder.refresh);
         $.append(Finder.container,Finder.refreshButton);
         
-        if(/\/res\//.test(d.location.href)){
+        if(/\/thread\//.test(d.location.href)){
             Finder.typeSelect = $.el('select',{id:'tf_type'});
             Finder.markButton = $.el('input',{type:'button',style:'width:auto',value:'Mark'});
             Finder.unmarkButton = $.el('input',{type:'button',style:'width:auto',value:'Unmark'});
