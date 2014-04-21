@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.0.1
+// @version       2.0.2
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -95,8 +95,8 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.0.1",
-    HOST : "b-stats.org",
+    VERSION : "2.0.2",
+    HOST : "api.b-stats.org",
     API : "/finder/api.php",
     chanX : false,
     offsetX : 80,
@@ -105,7 +105,7 @@ c = {
 };
 
 c.protocol = window.location.protocol;
-c.thread = document.URL.replace(/^.*\/|\.[^.]*$/g, '').substring(0, 9);
+c.thread = window.location.pathname.match(/\/thread\//) ? window.location.pathname.split("/thread/")[1].substring(0,9) : "";
 c.is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
 
 d = window.document;
