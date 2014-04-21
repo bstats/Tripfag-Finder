@@ -81,6 +81,9 @@
 - All options are now applied immediately when the options page is closed, and finder window is re-initialized.
 2.0.1 (terrance)
 - Quick fix for new 4chan URLs
+2.0.2 (terrance)
+- Fix for new 4chan URLs (again)
+- Change server
 2.1.0b (terrance)
 - New version numbering scheme
 - New 'custom' threadtype: viewing only, for now. Marking will come in a later revision.
