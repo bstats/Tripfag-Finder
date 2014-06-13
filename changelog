@@ -84,6 +84,8 @@
 2.0.2 (terrance)
 - Fix for new 4chan URLs (again)
 - Change server
+2.0.3 (terrance)
+- Fix windowshade bug
 2.1.0b (terrance)
 - New version numbering scheme
 - New 'custom' threadtype: viewing only, for now. Marking will come in a later revision.
