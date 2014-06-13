@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.0.2
+// @version       2.0.3
 // @icon          https://b-stats.org/finder/shittyicon.png
 // ==/UserScript==
 
@@ -95,7 +95,7 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.0.2",
+    VERSION : "2.0.3",
     HOST : "api.b-stats.org",
     API : "/finder/api.php",
     chanX : false,
@@ -411,15 +411,15 @@ Finder = {
         Finder.grabbed = false;
     },
     windowShade : function(){
-        if(Finder.folded){
-            Finder.folded = false;
+        if(!Finder.folded){
+            Finder.folded = true;
             Finder.container.style.minHeight = "0px";
             Finder.container.style.height = "16px";
             Finder.container.style.overflow = "hidden";
             Finder.shade.innerHTML = '&#x25BE;';
         }
         else{
-            Finder.folded = true;
+            Finder.folded = false;
             Finder.container.style.minHeight = null;
             Finder.container.style.height = null;
             Finder.shade.innerHTML = '&#x25B4;';
