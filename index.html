@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/edfokkmgaoaaakgaidkanoioaofademk">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,7 +24,7 @@
 
         <ul>
           <li><a href="https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js">Download <strong>Userscript</strong></a></li>
-          <li><a href="https://b-stats.org/finder/">Visit the <strong>Website</strong></a></li>
+          <li id='chrome-install-item'><a href="https://chrome.google.com/webstore/detail/4chan-tripfag-finder/edfokkmgaoaaakgaidkanoioaofademk" id="install-button">Add to <strong>Chrome</strong></a></li>
           <li><a href="https://github.com/bstats/Tripfag-Finder">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
@@ -46,6 +47,14 @@ On Chrome, this may require the additional step of going to <code>chrome://exten
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
+    <script type = "text/javascript">
     
+      if (chrome.app.isInstalled) {
+        document.getElementById('install-button').innerHtml = "Already added to <strong>Chrome</strong>";
+      }
+      else {
+        setTimeout(function(){return document.getElementById("chrome-install").addEventListener("click",function(e){e.preventDefault();return chrome.webstore.install()})})
+      }
+    </script>
   </body>
 </html>
