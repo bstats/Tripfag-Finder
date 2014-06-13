@@ -53,7 +53,7 @@ On Chrome, this may require the additional step of going to <code>chrome://exten
         document.getElementById('install-button').innerHtml = "Already added to <strong>Chrome</strong>";
       }
       else {
-        setTimeout(function(){return document.getElementById("chrome-install").addEventListener("click",function(e){e.preventDefault();return chrome.webstore.install()})})
+        setTimeout(function(){return document.getElementById("install-button").addEventListener("click",function(e){e.preventDefault();return chrome.webstore.install()})})
       }
     </script>
   </body>
