@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name          Tripfag-Finder
+// @name          4chan Tripfag-Finder
 // @namespace     terrance
 // @description   Find threads.
 // @license       CC BY-NC-SA 3.0; https://raw.github.com/bstats/Tripfag-Finder/master/license
@@ -9,12 +9,12 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.0.3
-// @icon          https://b-stats.org/finder/shittyicon.png
+// @version       2.1.0
+// @icon          https://t-f.xyz/finder/icon-64.png
 // ==/UserScript==
 
 (function(){
-var $,c,d,Prefs,Options,Finder,API,CSS;
+var $,c,d,Admin,Prefs,Options,Finder,API,CSS;
 
 $ = {
     qa : function(query, scope){
@@ -95,13 +95,14 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.0.3",
-    HOST : "api.b-stats.org",
+    VERSION : "2.1.0",
+    HOST : "t-f.xyz",
     API : "/finder/api.php",
     chanX : false,
-    offsetX : 80,
-    offsetY : 100,
-    flip : 1
+    offsetX : 120,
+    offsetY : 110,
+    flip : 1,
+    adminpage : ""
 };
 
 c.protocol = window.location.protocol;
@@ -130,7 +131,7 @@ API = {
             "//"+c.HOST+c.API,"a=unset&t="+c.thread+"&p="+Options.get('Password')+"&v="+c.VERSION,
             "json",
             {success: Finder.refresh, failure: Finder.handleError });
-    },
+    },//Admin functions follow
     del : function(e){
         var threadId = e.target.parentNode['data-thread'];
         var type = e.target.parentNode['data-type'];
@@ -138,15 +139,6 @@ API = {
             "//"+c.HOST+c.API,"a=delete&t="+threadId+"&y="+type+"&p="+Options.get('Password')+"&password="+Options.get('AdminPassword')+"&v="+c.VERSION,
             "json",
             {success: Finder.refresh, failure: Finder.handleError});
-    },
-    update : function(){
-        $.ajax('POST',
-            "//"+c.HOST+c.API,"a=update&t="+c.thread+"&p="+Options.get('password')+"&v="+c.VERSION,
-            "text",
-            {success: function(e){
-                if(e.target.responseText === 'new')
-                    Finder.notifyUpdateAvailable();
-            },failure: Finder.handleError });
     }
 };
 
@@ -154,7 +146,6 @@ Finder = {
     init : function(){
         Finder.refreshing = false;
         Options.init();
-        Finder.checkUpdate();
         Finder.createFinder();
         setInterval(Finder.refresh,120000);
         if(Finder.fresh)
@@ -183,7 +174,7 @@ Finder = {
             handle.ondblclick = Finder.windowShade;
             Finder.folded = false;
             Finder.grabbing = false;
-            Finder.shade = $.el('a',{id:'tf_shade',href:'javascript:;',innerHTML:'&#x25B4;',onclick:Finder.windowShade});
+            Finder.shade = $.el('a',{id:'tf_shade',href:'javascript:;',innerHTML:'-',onclick:Finder.windowShade});
             $.prepend(Finder.container,Finder.shade);
             $.prepend(Finder.container, handle);
             
@@ -240,6 +231,7 @@ Finder = {
 
         Options.makeLink();
         
+        
         if(Prefs["AutoSlide"])
             setTimeout(Finder.slide, 250);
         else
@@ -257,7 +249,10 @@ Finder = {
         var response = e.target.response;
         var rows = response.data;
         var users = response.users;
+        var announce = response.announce;
+        c.adminpage = response.adminpage;
         Finder.admin = response.admin;
+        if(Finder.admin) Admin.makeLink();
         var threads = new Array();
         if(rows.length < 1){
             Finder.threadWrapper.innerHTML = "No threads are currently marked.";
@@ -285,10 +280,10 @@ Finder = {
             }
             Finder.threadWrapper.innerHTML = "";
             for(var t = 0; t < threads.length; t++){
-                if(Prefs['Counts']){
+                if(Prefs['Counts'] && threads[t].className !== 'tf_override'){
                     $.append(threads[t],$.el('span',{className:'tf_Counts',textContent:" (R: "+threads[t]['data-replies']+" I: "+threads[t]['data-images']+")"}));
                 }
-                if(Finder.admin){
+                if(Finder.admin && threads[t].className !== 'tf_override'){
                     $.append(threads[t],$.el('a',{href:"javascript:;",textContent:"x",onclick:API.del,className:'tf_adminDelete'}));
                 }
                 $.append(Finder.threadWrapper,threads[t]);
@@ -296,8 +291,14 @@ Finder = {
             if(Prefs['Users']) $.append(Finder.threadWrapper,$.el('span',{textContent:"Online Users: "+users}));
             if(Prefs['Hover']) Finder.thumbPreview();
         }
+        if(announce != ""){
+          $.append(Finder.threadWrapper,$.el('div',{className:"tf_notify",innerHTML:announce}));
+        }
         $.id('tf_error').className = "tfHidden";
         $.id("tf_error").innerHTML = "";
+        if(Finder.location == 'fixed' || Finder.location == 'floatFixed'){
+          Finder.checkBounds();
+        }
         Finder.enableRefresh();
     },
     handleError : function(e){
@@ -339,25 +340,25 @@ Finder = {
     thumbInit : function(e){
         var div = e.target.parentNode;
         var tim = div['data-tim'];
+        
         Finder.hover = $.el('img',{id:'tf_hover'});
         Finder.hover.style.display = 'none';
-        
+        Finder.hover.style.position = 'fixed';
         $.append(d.body,Finder.hover);
-        Finder.thumbMove(e);
+        
         Finder.hover.onload = function(){
-            Finder.thumbMove(e);
-            Finder.hover.style.position = 'fixed';
-            Finder.hover.style.display = 'block';
+           Finder.hover.style.display = 'block';
+           Finder.thumbMove(e);
         };
+        
         $.id("tf_hover").src = "//t.4cdn.org/b/thumb/"+ tim +"s.jpg";
-        Finder.thumbMove(e);
     },
     thumbMove : function(e){
         var tf_hover = Finder.hover;
         var hoverHeight = $.height(tf_hover);
         var hoverWidth = $.width(tf_hover);
         var Y = e.clientY - c.offsetY;
-        if(e.clientX > window.innerWidth - 400) c.flip = -1;
+        if(e.clientX > window.innerWidth/2) c.flip = -1;
         else c.flip = 1;
         
         if(e.clientY < c.offsetY)
@@ -378,29 +379,74 @@ Finder = {
         if (e.type === 'mousedown' && e.button !== 0) {
             return;
         }
+        e.preventDefault();
         Finder.grabbed = true;
         Finder.grab = {};
         Finder.grab.mouseX = e.clientX;
         Finder.grab.mouseY = e.clientY;
-        Finder.grab.xpos = Finder.xpos;
+        Finder.grab.xpos = isNaN(Finder.xpos) ? 0 : Finder.xpos;
         Finder.grab.ypos_abs = Finder.ypos_abs;
         Finder.grab.ypos_rel = Finder.ypos_rel;
         $.on(d,'mousemove',Finder.grabMove);
         $.on(d,'mouseup',Finder.grabEnd);
+    },
+    checkBounds : function(){
+      var rect = Finder.container.getBoundingClientRect();
+      if(rect.left / window.innerWidth < 0.02){
+        Finder.container.style.left = '0';
+        Finder.xpos = 0;
+        rect = Finder.container.getBoundingClientRect();
+        Finder.xpos = rect.left * 100 / window.innerWidth;
+      }
+      if(rect.right / window.innerWidth > 0.98){
+        Finder.container.style.left = null;
+        Finder.container.style.right = '0';
+        rect = Finder.container.getBoundingClientRect();
+        Finder.xpos = rect.left * 100 / window.innerWidth;
+      }
+      if(Finder.location === 'float'){
+        if(rect.top / window.innerHeight < 0.02){
+          Finder.container.style.top = '0';
+          Finder.ypos_abs = 0;
+        }
+        if(rect.bottom / window.innerHeight > 0.98){
+          Finder.container.style.top = null;
+          Finder.container.style.bottom = '0';
+        }
+        rect = Finder.container.getBoundingClientRect();
+        Finder.ypos_abs = rect.top * 100 / window.innerHeight;
+      }
+      else{
+        if(rect.top / window.innerHeight < 0.02){
+          Finder.container.style.top = '0';
+          Finder.ypos_rel = 0;
+        }
+        if(rect.bottom / window.innerHeight > 0.98){
+          Finder.container.style.top = null;
+          Finder.container.style.bottom = '0';
+        }
+        rect = Finder.container.getBoundingClientRect();
+        Finder.ypos_rel = rect.top * 100 / window.innerHeight;
+      }
+      
+      
     },
     grabMove : function(e){
         if(!Finder.grabbed) return;
         var dx = e.clientX - Finder.grab.mouseX, dy = e.clientY - Finder.grab.mouseY;
         Finder.xpos = (dx/window.innerWidth)*100 + Finder.grab.xpos;
         Finder.container.style.left = Finder.xpos + "%";
+        Finder.container.style.right = null;
+        Finder.container.style.bottom = null;
         if(Finder.location === 'float'){
-            Finder.ypos_abs = Finder.grab.ypos_abs + dy;
-            Finder.container.style.top = Finder.ypos_abs + "px";
+            Finder.ypos_abs = (e.clientY/window.innerHeight)*100;
+            Finder.container.style.top = Finder.ypos_abs + "%";
         }
         else{
             Finder.ypos_rel = (dy/window.innerHeight)*100 + Finder.grab.ypos_rel;
             Finder.container.style.top = Finder.ypos_rel + "%";
         }
+        Finder.checkBounds();
     },
     grabEnd : function(e){
         Options.set("PositionX",Finder.xpos);
@@ -416,19 +462,16 @@ Finder = {
             Finder.container.style.minHeight = "0px";
             Finder.container.style.height = "16px";
             Finder.container.style.overflow = "hidden";
-            Finder.shade.innerHTML = '&#x25BE;';
+            Finder.shade.innerHTML = '+';
         }
         else{
             Finder.folded = false;
             Finder.container.style.minHeight = null;
             Finder.container.style.height = null;
-            Finder.shade.innerHTML = '&#x25B4;';
+            Finder.shade.innerHTML = '-';
             Finder.refresh();
         }
-    },
-    checkUpdate : function(){
-        if(!Prefs["Update Check"]) return;
-        API.update();
+        Finder.checkBounds();
     },
     checkSettings : function(){
         if(Finder.location == null && Options.get('Center') != null){
@@ -477,22 +520,6 @@ Finder = {
         Finder.refreshButton.removeAttribute("disabled");
         Finder.refreshButton.setAttribute("value","Refresh");
     },
-    notifyUpdateAvailable: function(){
-        var notif = $.el('span',{innerHTML:'An update to Tripfag-Finder is available!<br><a href="https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js">Click Here to Download</a>'});
-        if(c.chanX && !(navigator.userAgent.toLowerCase().indexOf('chrome') > -1)){ //chrome throws errors for this, while Firefox does it without issue
-            $.dispatchEvent('CreateNotification', {
-                    detail: {
-                      type: 'info',
-                      content: notif,
-                      lifetime: 25
-                    }
-              });
-        }
-        else {
-            $.id('tf_notify').className = "";
-            $.id('tf_notify').innerHTML = notif.innerHTML;
-        }
-    },
     err : function(msg){
         if(c.chanX){
             $.dispatchEvent('CreateNotification', {
@@ -519,8 +546,8 @@ Finder = {
               });
         }
         else {
-            $.id('tf_error').className = "";
-            $.id('tf_error').textContent = 'Tripfag-Finder has been updated to version '+c.VERSION+'!';
+            $.id('tf_notify').className = "";
+            $.id('tf_notify').textContent = 'Tripfag-Finder has been updated to version '+c.VERSION+'!';
         }
     }
 };
@@ -547,8 +574,8 @@ Options = {
         "draw": ["Show Draw threads", true],
         "loli": ["Show Loli threads", true],
         "shota": ["Show Shota threads", true],
+        "poke": ["Show Poképorn threads", true],
         "ks": ["Show Katawa Shoujou threads", true],
-        "Update Check": ["Check for updates", true],
         "Hover": ["Show OP image preview on hover",true],
         "Counts": ["Show reply/image count in thread list",true],
         "Location": ["Location of the thread finder","topCenter"],
@@ -563,7 +590,7 @@ Options = {
         "topLeft"   :   "Top of page, left side",
         "bottomCenter": "Bottom of page, centered",
         "bottomLeft":   "Bottom of page, left side",
-        "float":        "Floating, stuck to page",
+        "float":        "Floating, stuck to page (like watcher)",
         "floatFixed":   "Floating, stuck to window (like QR)"
     },
     threadTypes : { 
@@ -575,10 +602,10 @@ Options = {
         "trap":"Trap",
         "loli":"Loli",
         "shota":"Shota",
+        "poke":"Poké",
         "ks":"KS"
     },
     generalSettings : {
-        "Update Check": "Check for updates",
         "Hover": "Show OP image preview on hover",
         "Counts": "Show reply/image count in thread list",
         "AutoSlide": "Slide the finder in automatically",
@@ -668,7 +695,39 @@ Options = {
         Options.init();
         d.body.style.overflow = "auto";
         $.remove($.q("#tf_optionsOverlay"));
+        Admin.linkMade = false;
         Finder.createFinder();
+    }
+};
+
+Admin = {
+  linkMade : false,
+  makeLink: function() {
+    if(Admin.linkMade) return;
+    Admin.linkMade = true;
+    var link = $.el("a",{href:"javascript:void(0);",title:"Show admin panel",id:"tf_adminLink",textContent:"  Admin Panel"});
+    $.on(link,'click',Admin.open);
+    $.append($.id("threadFinderContainer"), $.el("br"));
+    $.append($.id("threadFinderContainer"), link);
+  },
+  open: function() {
+        d.body.style.overflow = 'hidden';
+        var overlay = $.el('div',{id:"tf_adminOverlay"});
+        $.append(d.body,overlay);
+        $.append(overlay,$.el('div',{className:"reply",id:"tf_adminWrapper",innerHTML:'<div id="tf_adminContent" style="height:100%"><div id="tf_adminMain" style="height:100%"></div></div>'}));
+        $.q("#tf_adminWrapper").style.width = "550px";
+        $.on(overlay, "click", Admin.close);
+        $.on(overlay.firstElementChild, 'click', function(e) {
+            return e.stopPropagation();
+        });
+        var frame = $.el('iframe',{src:c.adminpage});
+        frame.style.height="100%";
+        frame.style.width="100%";
+        $.append($.id('tf_adminMain'),frame);
+    },
+    close: function() {
+        d.body.style.overflow = "auto";
+        $.remove($.q("#tf_adminOverlay"));
     }
 };
 
@@ -687,22 +746,25 @@ CSS = {
         #tf_optionsWrapper h1 { font-size: 10pt; margin: 0 !important; color: rgba(0, 0, 0, 0.5); float: right; }\
         #tf_optionsWrapper h2 { font-size: 10pt; margin: 8px 0 6px 0 !important; text-align: left !important; }\
         #tf_optionsMain h2 { margin-top: 0 !important; }\
-        #threadFinderContainer { min-height:115px; padding-left:4px; width:24em; margin-top:2px; display:block; z-index: 28; }\\n\
+        #tf_adminOverlay { z-index: 99; box-sizing: border-box; -moz-box-sizing: border-box; position: fixed; display: flex; top: 0; left: 0; width: 100%; height: 100%; padding: 10px; background: rgba(0,0,0,.25); }\
+        #tf_adminWrapper * { margin: 0; padding: 0; }\
+        #tf_adminWrapper { box-sizing: border-box; -moz-box-sizing: border-box; display:block; padding: 12px; width: 550px; max-width: 100%; height: 580px; max-height:100%; z-index: 100; margin:auto; border: 1px solid rgba(0, 0, 0, 0.25); overflow-y: auto; box-shadow: 0px 0px 8px rgba(0,0,0,0.4);}\
+        #threadFinderContainer { min-height:115px; padding-left:4px; width:24em; margin-top:2px; display:block; z-index: 9; }\
+        #threadFinderContainer:hover { z-index: 20; }\
         #threadFinderContainer a{ text-decoration: none; }\
         .tf_Counts { font-size:0.8em; }\
         #tf_optionsLink {display: inline-block;} \
         #tf_hover { box-shadow: 0px 0px 5px rgba(0,0,0,0.5); z-index: 100; }\n\
         #tf_open {float: left; height: 100%; display: inline; position: absolute; margin-left: 0px; left: 0px; width: 22px; cursor: pointer;}\
         #tf_bar { display:block; height: 16px; font-size: 14pt; line-height: 14px; color: rgba(0,0,0,0.6); cursor: move; -moz-user-select: none; -webkit-user-select: none; user-select: none;}\
-        #tf_error, #tf_notify { min-height: 0px; box-sizing: border-box; -moz-box-sizing: border-box; margin: 0 6px; padding: 2px 5px; border: 1px solid rgba(0,0,0,0.25); border-radius: 3px; display:block; }\
+        #tf_error, #tf_notify, .tf_notify { min-height: 0px; box-sizing: border-box; -moz-box-sizing: border-box; margin: 0 6px; padding: 2px 5px; border: 1px solid rgba(0,0,0,0.25); border-radius: 3px; display:block; }\
         #tf_error { border-color: #f22; }\
         .tfHidden { visibility: hidden; }\
         .tf_thread {display: table-row;}\
         .tf_Counts {display: table-cell;}\
         .tf_threadLink {display: table-cell;}\
         .tf_adminDelete {font-weight: bold; margin-left: 4px; text-decoration: none; }\n\
-        #tf_shade {font-size:14pt; line-height:18px; position:absolute; right:0; top:0; }";
-        
+        #tf_shade {font-size:14pt; line-height:18px; position:absolute; right:2px; top:0; }";
         if(Finder.location === 'slideIn' || Finder.location === 'topCenter' || Finder.location === 'bottomCenter')
             css += "#threadFinderContainer { padding:auto; text-align:center; margin-left:auto; margin-right:auto; box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.3) }";
         if(Finder.location === 'slideIn')
@@ -717,7 +779,7 @@ CSS = {
         $.append(d.body, $.el('style',{textContent: css,id:"tf_css"}));
     }
 };
-
+console.log("TF Loaded: "+c.VERSION);
 $.on(d, '4chanXInitFinished', function(){c.chanX = true;});
 $.on(d, 'DOMContentLoaded',Finder.init);
 }).call(this);

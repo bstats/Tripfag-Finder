@@ -86,8 +86,11 @@
 - Change server
 2.0.3 (terrance)
 - Fix windowshade bug
-2.1.0b (terrance)
-- New version numbering scheme
-- New 'custom' threadtype: viewing only, for now. Marking will come in a later revision.
-- Fixed display of override messages
-- Windowshade action is now animated
+2.1.0 (terrance)
+- Fixed display of override messages (no more dumb 'null's next to them)
+- Floating finder now snaps to window boundaries (working with windowshade mode too)
+- Update checking now completely server-side and less annoying
+- Added server announcement API feature to replace dumb override messages
+- Moved to new domain name (t-f.xyz)
+- Moved (more) administrative functions into script
+- Cleaned up and optimized serverside
