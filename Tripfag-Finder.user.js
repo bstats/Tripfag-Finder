@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.1.0
+// @version       2.1.1
 // @icon          https://t-f.xyz/finder/icon-64.png
 // ==/UserScript==
 
@@ -95,7 +95,7 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.1.0",
+    VERSION : "2.1.1",
     HOST : "t-f.xyz",
     API : "/finder/api.php",
     chanX : false,
@@ -116,7 +116,7 @@ API = {
     get : function(){
         Finder.refreshing = true;
         $.ajax('POST',
-            "//"+c.HOST+c.API,"a=get&t="+c.thread+"&p="+$.e(Options.get('password'))+"&ap="+$.e(Options.get('AdminPassword'))+"&v="+c.VERSION,
+            "//"+c.HOST+c.API,"a=get&t="+c.thread+"&p="+$.e(Options.get('Password'))+"&ap="+$.e(Options.get('AdminPassword'))+"&v="+c.VERSION,
             "json",
             {success: Finder.processResponse, failure: Finder.handleError });
     },
