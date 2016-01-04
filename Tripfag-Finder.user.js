@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.1.1
+// @version       2.2.0
 // @icon          https://t-f.xyz/finder/icon-64.png
 // ==/UserScript==
 
@@ -95,7 +95,7 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.1.1",
+    VERSION : "2.2.0",
     HOST : "t-f.xyz",
     API : "/finder/api.php",
     chanX : false,
@@ -568,6 +568,7 @@ Options = {
     settings: {
         "animu": ["Show Animu threads", true],
         "gfur": ["Show Gfur threads", true],
+        "hfur": ["Show Hfur threads", true],
         "sfur": ["Show Sfur threads", true],
         "pony": ["Show Pony threads", true],
         "trap": ["Show Trap threads", true],
@@ -597,6 +598,7 @@ Options = {
         "animu":"Animu",
         "draw":"Draw",
         "gfur":"Gfur",
+        "hfur":"Hfur",
         "pony":"Pony",
         "sfur":"Sfur",
         "trap":"Trap",
