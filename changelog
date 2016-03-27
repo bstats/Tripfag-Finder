@@ -98,3 +98,5 @@
 - Fixed password error
 2.2.0 (terrance)
 - Add hfur
+2.3.0 (terrance)
+- Add unmarked namesync threads, just like b-stats used to have!

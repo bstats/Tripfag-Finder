@@ -9,7 +9,7 @@
 // @match       https://boards.4chan.org/b/*
 // @match       http://boards.4chan.org/b/*
 // @updateURL     https://github.com/bstats/Tripfag-Finder/raw/master/Tripfag-Finder.user.js
-// @version       2.2.0
+// @version       2.3.0
 // @icon          https://t-f.xyz/finder/icon-64.png
 // ==/UserScript==
 
@@ -95,7 +95,7 @@ $ = {
 
 c = {
     NAMESPACE : "TripfagFinder.",
-    VERSION : "2.2.0",
+    VERSION : "2.3.0",
     HOST : "t-f.xyz",
     API : "/finder/api.php",
     chanX : false,
@@ -153,8 +153,8 @@ Finder = {
     },
     createFinder : function(){
         Finder.destroyFinder();
-        Finder.location = Options.get("Location");
         Finder.checkSettings();
+        Finder.location = Options.get("Location");
         CSS.init();
         Finder.container = $.el('div',{id:'threadFinderContainer',className:'reply',innerHTML:'<strong>Threads</strong>'});
         Finder.hidden = true;
@@ -204,7 +204,7 @@ Finder = {
             $.on(Finder.unmarkButton,"click", Finder.unmark);
         
             for(var type in Options.threadTypes){   
-                if(Prefs[type])
+                if(Prefs[type] && type != "ns")
                     $.append(Finder.typeSelect,$.el("option",{value:type,textContent:Options.threadTypes[type]})); 
              };
              
@@ -267,11 +267,19 @@ Finder = {
                     threads[threads.length] = $.el('div',{className:"tf_override",innerHTML:t['thread']});
                 else if(Prefs[t['type']]){
                     t.percent = ~~(t.votes/typeTotals[t.type]*100);
+                    var pctVotes = ""
+                    if(t['type'] === 'ns') {
+                      pctVotes = "("+t.votes+" names)";
+                    } else {
+                      pctVotes = "("+t.percent+"%) ("+t.votes+")"
+                    }
                     threads[threads.length] = $.el('div',{
                         className:"tf_thread",
                         "data-thread":t.thread,"data-votes":t.votes,"data-type":t.type,
-                        "data-tim":t.tim,"data-replies":t.r,"data-images":t.i,
-                        innerHTML:"<a class='tf_threadLink' href='/b/thread/"+t.thread+"'>"+Options.threadTypes[t.type]+" Thread: "+t.thread+" ("+t.percent+"%) ("+t.votes+")</a>"});
+                        "data-tim":t.tim,"data-replies":t.r,"data-images":t.i,"data-name":t.name,
+                        "data-trip":t.trip,
+                        innerHTML:"<a class='tf_threadLink' href='/b/thread/"+t.thread+"'>"+Options.threadTypes[t.type]+" Thread: "+t.thread+" "+pctVotes+"</a>"
+                      });
                     if(t.thread == c.thread){
                         Finder.typeSelect.value = t.type;
                     }
@@ -340,18 +348,22 @@ Finder = {
     thumbInit : function(e){
         var div = e.target.parentNode;
         var tim = div['data-tim'];
+        var nameblock = "<div class='postInfo'><span class='nameBlock'><span class='name'>"
+        + div['data-name'] + "</span>&nbsp;<span class='postertrip'>" + div['data-trip'] + "</span></span></div>";
+        var img = $.el('img');
+        Finder.hover = $.el('div',{id:'tf_hover', innerHTML:nameblock+"<br>", className:"post"});
         
-        Finder.hover = $.el('img',{id:'tf_hover'});
         Finder.hover.style.display = 'none';
         Finder.hover.style.position = 'fixed';
         $.append(d.body,Finder.hover);
         
-        Finder.hover.onload = function(){
+        img.onload = function(){
            Finder.hover.style.display = 'block';
            Finder.thumbMove(e);
         };
         
-        $.id("tf_hover").src = "//t.4cdn.org/b/thumb/"+ tim +"s.jpg";
+        img.src = "//t.4cdn.org/b/thumb/"+ tim +"s.jpg";
+        Finder.hover.appendChild(img);
     },
     thumbMove : function(e){
         var tf_hover = Finder.hover;
@@ -557,7 +569,7 @@ Options = {
         var pref;
         for (pref in Options.settings) {
             var stored = Options.get(pref);
-            Prefs[pref] = stored == null ? Options.settings[pref][1] : stored == "true";
+            Prefs[pref] = stored == "true";
         }
     },
     makeLink: function() {
@@ -577,6 +589,7 @@ Options = {
         "shota": ["Show Shota threads", true],
         "poke": ["Show Poképorn threads", true],
         "ks": ["Show Katawa Shoujou threads", true],
+        "ns": ["Show unmarked NameSync threads",true],
         "Hover": ["Show OP image preview on hover",true],
         "Counts": ["Show reply/image count in thread list",true],
         "Location": ["Location of the thread finder","topCenter"],
@@ -605,7 +618,8 @@ Options = {
         "loli":"Loli",
         "shota":"Shota",
         "poke":"Poké",
-        "ks":"KS"
+        "ks":"KS",
+        "ns":"NS"
     },
     generalSettings : {
         "Hover": "Show OP image preview on hover",
@@ -614,7 +628,11 @@ Options = {
         "Users": "Show online user count"
     },
     get: function(name) {
-        return localStorage.getItem(c.NAMESPACE + name);
+      var fqName = c.NAMESPACE + name;
+      if(!localStorage.hasOwnProperty(fqName) && typeof(Options.settings[name]) !== 'undefined'){
+          localStorage.setItem(fqName, Options.settings[name][1]);
+      }
+      return localStorage.getItem(fqName);
     },
     set: function(name, value) {
         localStorage.setItem(c.NAMESPACE + name, value);
@@ -756,7 +774,8 @@ CSS = {
         #threadFinderContainer a{ text-decoration: none; }\
         .tf_Counts { font-size:0.8em; }\
         #tf_optionsLink {display: inline-block;} \
-        #tf_hover { box-shadow: 0px 0px 5px rgba(0,0,0,0.5); z-index: 100; }\n\
+        #tf_hover { text-align:center; z-index: 1000; }\
+        #tf_hover img { box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }\n\
         #tf_open {float: left; height: 100%; display: inline; position: absolute; margin-left: 0px; left: 0px; width: 22px; cursor: pointer;}\
         #tf_bar { display:block; height: 16px; font-size: 14pt; line-height: 14px; color: rgba(0,0,0,0.6); cursor: move; -moz-user-select: none; -webkit-user-select: none; user-select: none;}\
         #tf_error, #tf_notify, .tf_notify { min-height: 0px; box-sizing: border-box; -moz-box-sizing: border-box; margin: 0 6px; padding: 2px 5px; border: 1px solid rgba(0,0,0,0.25); border-radius: 3px; display:block; }\
